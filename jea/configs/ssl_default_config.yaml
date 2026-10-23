@@ -1,0 +1,121 @@
+# Shared defaults for all training configs in jea/configs/train/.
+# Each training config is merged on top of this file, then command-line key=value overrides.
+# The `jea` group is the DINO class-token branch; `ibot` is masked patch self-distillation;
+# `gram` is Gram anchoring (only enabled by the *_gram.yaml configs).
+MODEL:
+  WEIGHTS: ''
+compute_precision:
+  param_dtype: bf16
+  reduce_dtype: fp32
+  reshard_after_forward: true
+  prefetch: true
+jea:
+  loss_weight: 1.0
+  head_out_dim: 256
+  head_nlayers: 3
+  head_hidden_dim: 2048
+  koleo_loss_weight: 0.1
+  dino_prototypes: 131072
+ibot:
+  use_loss: true
+  loss_weight: 1.0
+  mask_sample_probability: 0.5
+  mask_ratio_min_max:
+  - 0.1
+  - 0.5
+  separate_head: true
+  head_n_prototypes: null
+  head_bottleneck_dim: null
+gram:
+  use_loss: false
+  ckpt: null
+  ep_load_ema_teacher: 250
+  rep_update: true
+  ep_first_update: 270
+  update_frequency: 10
+  max_updates: 3
+  normalized: true
+  img_level: true
+  remove_neg: false
+  remove_only_teacher_neg: false
+  loss_weight_schedule:
+    start: 0
+    peak: 0
+    end: 2.0
+    warmup_epochs: 260
+    cosine_epochs: 1
+train:
+  checkpointing: true
+  checkpointing_full: false
+  compile: false
+  cudagraphs: false
+  cudnn_benchmark: false
+  persistent_workers: true
+  prefetch_factor: 2
+  batch_size_per_gpu: 256
+  dataset_path: ImageNet:split=TRAIN:root=datasets/ImageNet:extra=datasets/ImageNet
+  output_dir: out
+  saveckp_freq: 10
+  saveckp_epochs:
+  - 260
+  seed: 0
+  num_workers: 12
+  OFFICIAL_EPOCH_LENGTH: -1
+  cache_dataset: true
+student:
+  arch: vit_base
+  patch_size: 16
+  depth: 12
+  drop_path_rate: 0.3
+  layerscale: 1.0e-05
+  drop_path_uniform: true
+  pretrained_weights: ''
+  ffn_layer: swiglufused
+  block_chunks: 4
+  qkv_bias: true
+  proj_bias: true
+  ffn_bias: true
+  num_register_tokens: 4
+  interpolate_antialias: true
+  interpolate_offset: 0.1
+teacher:
+  momentum_teacher: 0.994
+  final_momentum_teacher: 1
+  dino_teacher_temp: 0.07
+  dino_warmup_teacher_temp: 0.04
+  dino_warmup_teacher_temp_epochs: 30
+optim:
+  fused: false
+  epochs: 300
+  weight_decay: 0.04
+  weight_decay_end: 0.4
+  base_lr: 0.004
+  lr: 0.0
+  warmup_epochs: 10
+  min_lr: 1.0e-06
+  clip_grad: 3
+  scaling_rule: sqrt_wrt_1024
+  patch_embed_lr_mult: 0.2
+  layerwise_decay: 0.9
+  adamw_beta1: 0.9
+  adamw_beta2: 0.999
+  dino_freeze_last_layer_epochs: 1
+crops:
+  aug_type: asym
+  global_crops_number: 2
+  local_crops_number: 8
+  global_crops_scale:
+  - 0.32
+  - 1.0
+  local_crops_scale:
+  - 0.05
+  - 0.32
+  global_crops_size: 224
+  local_crops_size: 96
+evaluation:
+  eval_period_epochs: 10
+  knn: false
+wandb:
+  project: locality-tradeoff
+  env_name: dino_ibot_vit_b16
+  mode: disabled

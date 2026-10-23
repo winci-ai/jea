@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+out/
+tmp/
+datasets/
+wandb/
+work_dirs/
+*.pth
+*.pt
+*.distcp
+.env
+.env.*

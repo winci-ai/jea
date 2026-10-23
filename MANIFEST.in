@@ -1,0 +1,4 @@
+include README.md LICENSE NOTICE requirements.txt
+recursive-include jea/configs *.yaml
+recursive-include jea/eval LICENSE
+recursive-include scripts *.py *.sh

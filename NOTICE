@@ -1,0 +1,15 @@
+The Locality Trade-off in Masked Patch Self-Distillation
+
+This implementation contains modified code derived from DINO and DINOv2
+(Meta Platforms, Inc. and affiliates, Apache-2.0), iBOT (ByteDance, Inc. and
+affiliates, Apache-2.0), OpenMMLab evaluation entry points (Apache-2.0), and
+the DAVIS 2017 evaluation toolkit (BSD-3-Clause; see its adjacent LICENSE).
+
+jea/loss/gram_loss.py is adapted from DINOv3 (Meta Platforms, Inc. and
+affiliates) and remains subject to the DINOv3 License Agreement stated in its
+header.
+
+Original copyright headers are retained. Modifications include paired
+DINO / DINO+iBOT training, Gram anchoring, FSDP2 execution and checkpoints,
+frozen downstream adapters, the local-appearance and correspondence
+diagnostics, visualization, and experiment launchers.

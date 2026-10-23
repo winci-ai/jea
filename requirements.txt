@@ -1,0 +1,18 @@
+# PyTorch 2.7 provides the public FSDP2 APIs used by JEA.
+# Install the matching CUDA wheels first (see README.md).
+torch==2.7.1
+torchvision==0.22.1
+omegaconf>=2.3,<3
+torchmetrics>=1.0,<2
+fvcore
+iopath
+numpy>=1.26,<2
+einops
+wandb
+opencv-python<4.12
+scikit-image
+scikit-learn
+matplotlib
+pandas
+scipy
+Pillow

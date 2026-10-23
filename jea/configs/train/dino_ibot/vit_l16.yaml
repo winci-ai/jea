@@ -1,0 +1,82 @@
+# DINO+iBOT, ViT-L/16, ImageNet-1K, 300 epochs.
+jea:                        # DINO class-token self-distillation branch
+  loss_weight: 1.0
+  head_out_dim: 256         # bottleneck dimension of the projection head
+  head_nlayers: 3
+  head_hidden_dim: 2048
+  dino_prototypes: 131072
+  koleo_loss_weight: 0.1
+ibot:                       # masked patch self-distillation (cross-entropy, Sinkhorn-Knopp targets)
+  use_loss: true
+  loss_weight: 1.0          # fixed throughout training
+  separate_head: true       # separate DINO / iBOT projection heads, as in DINOv2
+  mask_sample_probability: 0.5
+  mask_ratio_min_max:
+  - 0.1
+  - 0.5
+gram:
+  use_loss: false
+train:
+  batch_size_per_gpu: 256       # 4 GPUs -> global batch 1024
+  dataset_path: ImageNet:split=TRAIN:root=datasets/ImageNet:extra=datasets/ImageNet
+  output_dir: out/          # runs are written to <output_dir>/<wandb.env_name>
+  seed: 0
+  num_workers: 16
+  cache_dataset: true
+  saveckp_freq: 10
+  saveckp_epochs:           # full training checkpoint at epoch 260; Gram runs resume from it
+  - 260
+student:
+  arch: vit_large
+  depth: 24
+  patch_size: 16
+  drop_path_rate: 0.4
+  layerscale: 1.0e-05
+  drop_path_uniform: true
+  pretrained_weights: ''
+  ffn_layer: swiglufused
+  block_chunks: 4
+  qkv_bias: true
+  proj_bias: true
+  ffn_bias: true
+  num_register_tokens: 4
+  interpolate_antialias: true
+  interpolate_offset: 0.1
+teacher:
+  momentum_teacher: 0.994
+  final_momentum_teacher: 1
+  dino_teacher_temp: 0.07
+  dino_warmup_teacher_temp: 0.04
+  dino_warmup_teacher_temp_epochs: 30
+optim:
+  epochs: 300
+  weight_decay: 0.04
+  weight_decay_end: 0.4
+  base_lr: 0.004            # peak LR for a global batch of 1024
+  lr: 0.0                   # set from base_lr with scaling_rule
+  warmup_epochs: 10
+  min_lr: 1.0e-06
+  clip_grad: 3
+  scaling_rule: sqrt_wrt_1024
+  patch_embed_lr_mult: 0.2
+  layerwise_decay: 0.9
+  dino_freeze_last_layer_epochs: 1
+crops:
+  aug_type: asym
+  global_crops_number: 2
+  local_crops_number: 8
+  global_crops_size: 224
+  local_crops_size: 96
+  global_crops_scale:
+  - 0.32
+  - 1.0
+  local_crops_scale:
+  - 0.05
+  - 0.32
+evaluation:
+  eval_period_epochs: 10    # export the EMA teacher every 10 epochs
+  knn: false
+wandb:
+  project: locality-tradeoff
+  env_name: dino_ibot_vit_l16
+  mode: disabled
