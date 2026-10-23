@@ -121,7 +121,7 @@ The Sintel experiments use a modified MMFlow. Install it in the dense-evaluation
 
 ```bash
 conda activate locality-dense
-git clone https://winci-ai@bitbucket.org/winci88/mmflow.git
+git clone https://github.com/winci-ai/mmflow.git
 cd mmflow
 pip install -e .
 ```
