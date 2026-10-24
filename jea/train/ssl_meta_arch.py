@@ -342,7 +342,7 @@ class SSLMetaArch(nn.Module):
                 )
                 / n_global_crops
             )
-            loss_dict["koleo_loss"] = koleo_loss
+            loss_dict["koleo_loss"] = koleo_loss / 2
             koleo_scale = n_global_crops
             loss_accumulator += (
                 koleo_loss * self.cfg.jea.koleo_loss_weight * koleo_scale
@@ -359,7 +359,7 @@ class SSLMetaArch(nn.Module):
                 n_masked_patches=n_masked_patches,
                 masks_weight=masks_weight,
             )
-            loss_dict["ibot_loss"] = ibot_patch_loss
+            loss_dict["ibot_loss"] = ibot_patch_loss / 2
             loss_accumulator += ibot_patch_loss * self.ibot_loss_weight
         if gram_teacher_patch_tokens is not None:
             gram_loss = self.gram_loss(
@@ -367,7 +367,7 @@ class SSLMetaArch(nn.Module):
                 gram_teacher_patch_tokens,
                 img_level=self.gram_img_level,
             )
-            loss_dict["gram_loss"] = gram_loss
+            loss_dict["gram_loss"] = gram_loss / 2
             loss_accumulator += gram_loss * gram_loss_weight
         self.backprop_loss(loss_accumulator)
         return loss_dict
