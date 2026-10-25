@@ -333,19 +333,15 @@ class SSLMetaArch(nn.Module):
         loss_dict["jea_loss"] = jea_loss
         loss_accumulator += jea_loss * self.jea_loss_weight
         if self.do_koleo:
-            koleo_loss = (
-                sum(
+            koleo_loss = sum(
                     (
                         self.koleo_loss(p)
                         for p in student_global_cls_tokens.chunk(n_global_crops)
                     )
                 )
-                / n_global_crops
-            )
             loss_dict["koleo_loss"] = koleo_loss / 2
-            koleo_scale = n_global_crops
             loss_accumulator += (
-                koleo_loss * self.cfg.jea.koleo_loss_weight * koleo_scale
+                koleo_loss * self.cfg.jea.koleo_loss_weight
             )
         if do_ibot_loss and (not self.ibot_separate_head):
             student_ibot_masked_patch_tokens_after_head = outputs_list.pop(0).squeeze(
